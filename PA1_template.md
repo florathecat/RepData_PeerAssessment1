@@ -51,16 +51,19 @@ StepsOverTime <- tapply(Activity$steps, Activity$interval, mean, na.rm=TRUE)
    dataset, contains the maximum number of steps.  
 
 ```r
-plot(StepsOverTime, type="l", xaxt="n", xlab="time interval", ylab="steps taken", ylim=c(0, max(StepsOverTime)+50), main="Average daily activity pattern")
+plot(StepsOverTime, type="l", xaxt="n", xlab="time interval", ylab="steps taken",
+     ylim=c(0, max(StepsOverTime)+50), main="Average daily activity pattern")
   
   peak <- which(StepsOverTime==max(StepsOverTime))
   #change interval into time by 1) stick 0s into all numbers to make them 4 digits
   # 2) change to date-time format, and 3) pick character 12-16, which is the time
-  times <- substr(as.POSIXct(sprintf("%04.0f", as.numeric(names(StepsOverTime))), format="%H%M"), 12, 16)
+  times <- substr(as.POSIXct(sprintf("%04.0f", as.numeric(names(StepsOverTime))), format="%H%M"),
+                  12, 16)
   #define positions of round hours for x axis labeling
   rdhour <- 24*c(1:12)-11
   axis(1, times[rdhour], at=rdhour, las=2)
-  text(peak, max(StepsOverTime)+20, paste("Peak time ", times[peak], " (", round(max(StepsOverTime),1), " steps)",sep=""))
+  text(peak, max(StepsOverTime)+20, paste("Peak time ", times[peak], " (",
+                                          round(max(StepsOverTime),1), " steps)",sep=""))
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
@@ -86,11 +89,10 @@ paste("There are", length(WhichNA), "missing values in the dataset!")
 
 ```r
 SubAct <- Activity
-
-for (i in 1:length(WhichNA)) {
-  x <- WhichNA[i]
-  SubAct[x, 1] <- StepsOverTime[as.character(SubAct[x,3])]
-}
+  for (i in 1:length(WhichNA)) {
+    x <- WhichNA[i]
+    SubAct[x, 1] <- StepsOverTime[as.character(SubAct[x,3])]
+  }
 ```
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.  
@@ -99,7 +101,8 @@ for (i in 1:length(WhichNA)) {
 NewSPD <- tapply(SubAct$steps, SubAct$date, sum)
 NewSum <- summary(NewSPD)
 
-hist(NewSPD, main="Steps taken per day with imputed values", xlab="number of steps", ylab=NA, col="red")
+hist(NewSPD, main="Steps taken per day with imputed values", xlab="number of steps",
+     ylab=NA, col="red")
   text(10, 30, paste("Mean =", NewSum["Mean"], "\nMedian=", NewSum["Median"]), pos=4)
 ```
 
@@ -128,7 +131,7 @@ SubAct$Weekday <- weekdays(SubAct$date)
 wksteps <- tapply(SubAct$steps, list(SubAct$interval, SubAct$Weekday), mean)
 wksteps <- as.data.frame(wksteps)
 
-plot(wksteps$Weekday, type="l", col="blue", xaxt="n", xlab="time interval", ylab="steps taken", ylim=c(0, max(wksteps$Weekday)+30))
+plot(wksteps$Weekday, type="l", col="blue", xaxt="n", xlab="time interval", ylab="steps taken")
   lines(wksteps$Weekend, type="l", col="red")
   axis(1, times[rdhour], at=rdhour, las=2)
   legend("topright", names(wksteps), lty=1, col=c("blue", "red"), bty="n")
@@ -136,8 +139,10 @@ plot(wksteps$Weekday, type="l", col="blue", xaxt="n", xlab="time interval", ylab
   #add text above the figure since there is not much space within the border
   wkpeak <- which(wksteps$Weekday == max(wksteps$Weekday))
   wdpeak <- which(wksteps$Weekend == max(wksteps$Weekend))
-    mtext(paste("Weekday peak time ", times[wkpeak]," (", round(max(wksteps$Weekday),1), " steps)", sep=""), side=3, line=1.2)
-    mtext(paste("Weekend peak time ", times[wdpeak]," (", round(max(wksteps$Weekend),1), " steps)", sep=""), side=3, line=0.2)
+    mtext(paste("Weekday peak time-- ", times[wkpeak]," (", round(max(wksteps$Weekday),1),
+                " steps)", sep=""), side=3, line=1.2)
+    mtext(paste("Weekend peak time-- ", times[wdpeak]," (", round(max(wksteps$Weekend),1),
+                " steps)", sep=""), side=3, line=0.2)
 ```
 
 ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
